@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+<title>Sprawa Tupeene’a</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Układ: jedna kolumna jak teczka z aktami — nagłówek-pasek z postępem, karty misji jak kolejne strony raportu */
+:root{
+  --paper:#e8edf1; --sheet:#f6f8fa; --ink:#1b2a44; --ink-soft:#4a5a73; --rule:#c5ced8;
+  --stamp:#b3261e; --ok:#1f7a4d; --warn:#9a6a00; --term:#14202f; --term-fg:#cfe3d4;
+  --chip:#dde4eb;
+  --f-display:"Special Elite","Courier New",monospace;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f151d; --sheet:#17202b; --ink:#dfe7f1; --ink-soft:#9aabc0; --rule:#2c3a4b;
+  --stamp:#ef6b5f; --ok:#4cc38a; --warn:#e0b34c; --term:#0a1016; --term-fg:#bfe0c8; --chip:#223042; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f151d; --sheet:#17202b; --ink:#dfe7f1; --ink-soft:#9aabc0; --rule:#2c3a4b;
+  --stamp:#ef6b5f; --ok:#4cc38a; --warn:#e0b34c; --term:#0a1016; --term-fg:#bfe0c8; --chip:#223042; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:680px;margin:0 auto}
+header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding-block:12px 10px;border-bottom:1px dashed var(--rule);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.bar .brand{font-family:var(--f-display);font-size:18px;letter-spacing:.02em}
+.bar .meta{font-family:var(--f-mono);font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:5px}
+.dots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink-soft)}
+.dots i.done{background:var(--ink);border-color:var(--ink)}
+.dots i.cur{border-color:var(--stamp);background:var(--stamp)}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;line-height:1.2}
+h1{font-size:clamp(30px,8vw,46px);margin:28px 0 6px}
+h2{font-size:26px;margin:22px 0 4px}
+h3{font-size:19px;margin:18px 0 6px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.sheet{background:var(--sheet);border:1px solid var(--rule);padding:18px 18px 20px;margin-top:16px}
+.stamp{display:inline-block;font-family:var(--f-display);color:var(--stamp);border:3px double var(--stamp);padding:2px 10px;transform:rotate(-4deg);letter-spacing:.08em;font-size:15px}
+p{margin:.5em 0}
+.lead{font-size:17px}
+.say{border-left:3px solid var(--rule);padding:2px 0 2px 12px;margin:10px 0}
+.say b{font-family:var(--f-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);display:block}
+.mono{font-family:var(--f-mono);font-size:14px}
+code{font-family:var(--f-mono);font-size:.92em;background:var(--chip);padding:1px 5px;border-radius:3px}
+button{font:inherit;cursor:pointer}
+.btn{font-family:var(--f-mono);font-size:15px;background:var(--ink);color:var(--sheet);border:0;padding:12px 18px;border-radius:4px}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn:focus-visible,.opt:focus-visible,.seg button:focus-visible,select:focus-visible,input:focus-visible,label.rule:focus-within{outline:3px solid var(--stamp);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+input[type=text]{font:inherit;font-size:17px;padding:11px 12px;border:1.5px solid var(--ink-soft);background:var(--sheet);color:var(--ink);border-radius:4px;width:100%;max-width:420px}
+.q{margin-top:18px}
+.q .stem{font-weight:600}
+.opts{display:grid;gap:8px;margin-top:8px}
+.opt{text-align:left;background:var(--sheet);color:var(--ink);border:1.5px solid var(--rule);padding:10px 12px;border-radius:4px}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--sheet))}
+.opt.wrong{border-color:var(--stamp);background:color-mix(in srgb,var(--stamp) 10%,var(--sheet))}
+.why{font-size:14.5px;color:var(--ink-soft);margin-top:8px;border-left:3px solid var(--ok);padding-left:10px}
+.why.bad{border-color:var(--stamp)}
+.req{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px dashed var(--rule)}
+.req > div{min-width:0}
+.lbl{font-family:var(--f-mono);font-size:12.5px;background:var(--chip);padding:1px 6px;border-radius:3px;white-space:nowrap}
+.seg{display:flex;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.seg button{background:transparent;color:var(--ink);border:0;padding:8px 10px;font-family:var(--f-mono);font-size:13px}
+.seg button.on{background:var(--ink);color:var(--sheet)}
+.verdict{font-family:var(--f-mono);font-size:13px;margin-top:4px}
+.verdict.ok{color:var(--ok)} .verdict.no{color:var(--stamp)}
+table.lab{border-collapse:collapse;font-size:14px;width:100%}
+table.lab td,table.lab th{border-bottom:1px solid var(--rule);padding:6px 4px;text-align:left;vertical-align:top}
+.scroll{overflow-x:auto}
+label.rule{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed var(--rule);font-family:var(--f-mono);font-size:13.5px;cursor:pointer}
+label.rule input{margin-top:3px;width:18px;height:18px;flex:none}
+label.rule span{min-width:0;overflow-wrap:anywhere}
+.term{background:var(--term);color:var(--term-fg);font-family:var(--f-mono);font-size:12.5px;padding:12px;border-radius:4px;overflow-x:auto;white-space:pre;margin-top:12px;line-height:1.5}
+.term .d{color:#ff9b8f} .term .a{color:#8fe3b0} .term .w{color:#f3cf72}
+select{font:inherit;font-family:var(--f-mono);font-size:14px;padding:8px;background:var(--sheet);color:var(--ink);border:1.5px solid var(--ink-soft);border-radius:4px;max-width:100%}
+.match{display:grid;gap:12px;margin-top:10px}
+.match .who{font-weight:600}
+.score{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.haiku{font-family:var(--f-display);font-size:22px;line-height:1.6;margin:16px 0;padding-left:16px;border-left:3px solid var(--stamp)}
+.cert{border:2px solid var(--ink);padding:20px;text-align:center;margin-top:16px;background:var(--sheet)}
+.cert .code{font-family:var(--f-mono);font-size:30px;letter-spacing:.2em;margin:8px 0}
+.small{font-size:13.5px;color:var(--ink-soft)}
+.toggle{display:inline-flex;gap:0}
+footer{margin-top:28px}
+@media (prefers-reduced-motion: no-preference){.sheet{animation:in .25s ease-out}@keyframes in{from{transform:translateY(6px)}to{transform:none}}}
+</style>
+
+</head>
+<body>
+<header class="bar wrap" id="bar"></header>
+<main class="wrap" id="app"></main>
+
+<script>
+/* ===================== stan ===================== */
+const KLUCZ = "tupeene-w5-v1";
+let S = { name:"", view:"start", mi:0, pts:{}, ans:{} };
+try { const z = JSON.parse(localStorage.getItem(KLUCZ)||"null"); if (z && typeof z==="object") S = Object.assign(S, z); } catch(e){}
+function zapisz(){ try{ localStorage.setItem(KLUCZ, JSON.stringify(S)); }catch(e){} }
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ===================== misje: definicje ===================== */
+const MISJE = [
+ { id:"m1", tytul:"Lwy, kosmos czy wyspa?", temat:"po co nam MAC", max:4, czas:"3 min" },
+ { id:"m2", tytul:"Licencja na czytanie", temat:"Bell–LaPadula", max:8, czas:"5 min" },
+ { id:"m3", tytul:"Akta Sholmesa", temat:"Biba", max:6, czas:"4 min" },
+ { id:"m4", tytul:"Wyspa w SELinuksie", temat:"wymuszanie typów", max:10, czas:"6 min" },
+ { id:"m5", tytul:"Licencja na zabijanie", temat:"zdolności Linuksa", max:6, czas:"4 min" },
+ { id:"m6", tytul:"Toast i LinkedIn", temat:"RBAC i Windows", max:5, czas:"3 min" },
+];
+const MAX = MISJE.reduce((a,m)=>a+m.max,0);
+const suma = () => MISJE.reduce((a,m)=>a+(S.pts[m.id]||0),0);
+
+/* ===================== pasek ===================== */
+function pasek(){
+  const dots = MISJE.map((m,i)=>{
+    const c = S.pts[m.id]!==undefined ? "done" : (S.view==="mission" && S.mi===i ? "cur" : "");
+    return `<i class="${c}" title="${esc(m.tytul)}"></i>`;}).join("");
+  $("#bar").innerHTML = `<div class="brand">Sprawa Tupeene’a</div>
+    <div class="dots" aria-label="postęp misji">${dots}</div>
+    <div class="meta">${S.name?esc(S.name)+" · ":""}${suma()}/${MAX} pkt</div>`;
+}
+
+/* ===================== quiz wielokrotnego wyboru ===================== */
+function quiz(mid, pytania){
+  const box = document.createElement("div");
+  S.ans[mid] = S.ans[mid] || {};
+  pytania.forEach((q,qi)=>{
+    const d = document.createElement("div"); d.className="q";
+    d.innerHTML = `<div class="stem">${q.p}</div><div class="opts"></div><div class="fb"></div>`;
+    const opts = d.querySelector(".opts"), fb = d.querySelector(".fb");
+    const pokaz = (wyb) => {
+      opts.querySelectorAll(".opt").forEach((b,i)=>{ b.disabled=true;
+        if(i===q.ok) b.classList.add("right"); if(i===wyb && wyb!==q.ok) b.classList.add("wrong"); });
+      fb.innerHTML = `<div class="why ${wyb===q.ok?"":"bad"}">${wyb===q.ok?"<b>Trafnie.</b> ":"<b>Pudło.</b> "}${q.w}</div>`;
+    };
+    q.o.forEach((t,i)=>{ const b=document.createElement("button"); b.className="opt"; b.innerHTML=t;
+      b.onclick=()=>{ if(S.ans[mid][qi]!==undefined) return; S.ans[mid][qi]=i; zapisz(); pokaz(i); sprawdzKoniec(); };
+      opts.appendChild(b); });
+    if (S.ans[mid][qi]!==undefined) pokaz(S.ans[mid][qi]);
+    box.appendChild(d);
+  });
+  const sprawdzKoniec = () => {
+    const odp = S.ans[mid];
+    if (Object.keys(odp).length===pytania.length){
+      const pkt = pytania.reduce((a,q,i)=>a+(odp[i]===q.ok?1:0),0);
+      zakonczMisje(mid, pkt);
+    }
+  };
+  return box;
+}
+
+/* ===================== siatka decyzji ZGODA/ODMOWA ===================== */
+function siatka(mid, wnioski, regula){
+  const box = document.createElement("div");
+  const wyb = S.ans[mid] || {};
+  wnioski.forEach((w,i)=>{
+    const r = document.createElement("div"); r.className="req";
+    r.innerHTML = `<div><div>${w.t}</div><div class="verdict" id="v-${mid}-${i}"></div></div>
+      <div class="seg" role="group" aria-label="decyzja"><button data-v="1">ZGODA</button><button data-v="0">ODMOWA</button></div>`;
+    r.querySelectorAll("button").forEach(b=>{
+      if (wyb[i]!==undefined && String(wyb[i])===b.dataset.v) b.classList.add("on");
+      b.onclick=()=>{ if (S.pts[mid]!==undefined) return; wyb[i]=+b.dataset.v; S.ans[mid]=wyb; zapisz();
+        r.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); btn.disabled = Object.keys(wyb).length<wnioski.length; };
+    });
+    box.appendChild(r);
+  });
+  const btn = document.createElement("button"); btn.className="btn"; btn.textContent="Pieczętuj decyzje";
+  btn.disabled = Object.keys(wyb).length<wnioski.length;
+  const ujawnij = () => {
+    let pkt=0;
+    wnioski.forEach((w,i)=>{ const v=$(`#v-${mid}-${i}`); const ok=(wyb[i]===(w.z?1:0)); if(ok) pkt++;
+      v.className = "verdict " + (ok?"ok":"no");
+      v.innerHTML = `${ok?"✓":"✗"} ${w.z?"ZGODA":"ODMOWA"} — ${w.w}`; });
+    btn.disabled=true; return pkt;
+  };
+  btn.onclick=()=>{ const p=ujawnij(); zakonczMisje(mid,p); };
+  const r = document.createElement("div"); r.className="row"; r.appendChild(btn); box.appendChild(r);
+  if (S.pts[mid]!==undefined) setTimeout(ujawnij,0);
+  return box;
+}
+
+/* ===================== zakończenie misji ===================== */
+function zakonczMisje(mid, pkt){
+  if (S.pts[mid]===undefined){ S.pts[mid]=pkt; zapisz(); }
+  pasek();
+  const m = MISJE.find(x=>x.id===mid); const i = MISJE.indexOf(m);
+  const st = $("#dalej"); if(!st) return;
+  st.innerHTML = `<div class="sheet"><span class="eyebrow">Raport z misji</span>
+    <p class="score">Zdobyto ${S.pts[mid]} z ${m.max} pkt.</p>
+    <div class="row"><button class="btn" id="nast">${i<MISJE.length-1?"Następna misja →":"Do dyplomu →"}</button></div></div>`;
+  $("#nast").onclick = () => { if(i<MISJE.length-1){ idz("mission",i+1);} else idz("final"); };
+}
+
+/* ===================== treść misji ===================== */
+function m1(el){
+  el.innerHTML = `
+  <p class="lead">Londyn, pokój nad pubem. Ryba z frytkami stygnie. Łotr <b>Tupeene</b> (czyt. „Tupín”) grasuje po systemie: czyta cudze akta, wysyła fałszywe rekomendacje i podszywa się pod wszystkich.</p>
+  <div class="say"><b>Lupin</b>Nakarmmy nim lwy w ogrodzie zoologicznym. Szybko i nikt nie będzie tęsknił.</div>
+  <div class="say"><b>Bond</b>Nigdy! Jestem obrońcą praw zwierząt. Wystrzelmy go w kosmos.</div>
+  <div class="say"><b>Sholmes</b>Mam trzy zastrzeżenia, Bond. A potem — lepszy pomysł: bilet w jedną stronę na bezludną wyspę. Będzie miał jedzenie, wodę i dach nad głową. Tylko nie będzie miał kogo oszukać.</div>
+  <p>Przełóżmy to na język systemu operacyjnego. Tupeene to <b>proces</b>.</p>`;
+  el.appendChild(quiz("m1",[
+   {p:"Pomysł Lupina („lwy”) to w systemie odpowiednik…",
+    o:["<code>kill -9</code> na procesie Tupeene’a","nadania mu etykiety SELinuksa","odebrania mu bitu setuid"],ok:0,
+    w:"Lwy to brutalne zakończenie procesu. Kłopot: menedżer usług (np. systemd) często od razu uruchomi go ponownie, a my nie dowiemy się, czego próbował. Bond ma rację — to nie rozwiązuje problemu."},
+   {p:"Pomysł Bonda („kosmos”) to przeniesienie Tupeene’a na osobną, odłączoną od sieci maszynę. Które zastrzeżenie Sholmesa najlepiej pasuje do świata IT?",
+    o:["Osobna maszyna dla każdego podejrzanego procesu kosztuje fortunę — jak kiedyś osobny komputer dla każdego poziomu tajności","Kosmos jest za zimny","Bond nie ma prawa jazdy na rakietę"],ok:0,
+    w:"Zanim wymyślono MAC, wojsko tak robiło: osobny komputer na każdy poziom tajności. Działa, ale jest drogie. Drugie zastrzeżenie Sholmesa — „porwie satelitę i wróci” — to eskalacja uprawnień. Trzecie — „papierologia” — to audyt, który i tak trzeba prowadzić."},
+   {p:"Pomysł Sholmesa („wyspa”) to w systemie…",
+    o:["zamknięcie procesu w domenie MAC: dostaje tylko to, czego naprawdę potrzebuje","usunięcie konta użytkownika","zwiększenie uprawnień rwx"],ok:0,
+    w:"Właśnie tak działa SELinux czy AppArmor: proces żyje i działa, ale polityka pozwala mu tylko na „jedzenie, wodę i dach” — resztę blokuje, niezależnie od tego, czego chce."},
+   {p:"Dlaczego wyspy nie da się zrobić samym <code>chmod</code> (DAC)?",
+    o:["Bo w DAC o dostępie decyduje właściciel pliku — a Tupeene jest właścicielem swoich plików i może je rozdawać, komu chce","Bo chmod działa tylko w Windows","Bo chmod jest za wolny"],ok:0,
+    w:"W DAC właściciel jest panem i władcą. Wyspa wymaga polityki, której więzień nie może zmienić — to jest definicja kontroli obowiązkowej."}
+  ]));
+}
+
+function m2(el){
+  el.innerHTML = `
+  <p class="lead">Bond zakłada teczkę operacji „Wyspa”. W MI6 obowiązuje <b>Bell–LaPadula</b>: <b>nie czytaj w górę, nie zapisuj w dół</b>. Etykieta to poziom i kategorie.</p>
+  <div class="scroll"><table class="lab"><tr><th>Kto / co</th><th>Etykieta</th></tr>
+  <tr><td>James Bond</td><td><span class="lbl">ŚCIŚLE TAJNE {MI6, OPERACJE}</span></td></tr>
+  <tr><td>Herlock Sholmes</td><td><span class="lbl">TAJNE {MI6, SÛRETÉ}</span></td></tr>
+  <tr><td>Arsène Lupin</td><td><span class="lbl">TAJNE {SÛRETÉ}</span></td></tr>
+  <tr><td>Tupeene</td><td><span class="lbl">JAWNE { }</span></td></tr>
+  <tr><td>plan „Wyspa”</td><td><span class="lbl">TAJNE {MI6}</span></td></tr>
+  <tr><td>skrzynka donosów MI6</td><td><span class="lbl">TAJNE {MI6}</span></td></tr>
+  <tr><td>pocztówka do panny Moneypenny</td><td><span class="lbl">JAWNE { }</span></td></tr>
+  <tr><td>akta Sûreté o Lupinie</td><td><span class="lbl">POUFNE {SÛRETÉ}</span></td></tr>
+  </table></div>
+  <p class="small">Czytanie: podmiot musi <b>dominować</b> obiekt (poziom ≥ i kategorie ⊇). Zapis: obiekt musi dominować podmiot.</p>`;
+  el.appendChild(siatka("m2",[
+   {t:"Bond <b>czyta</b> plan „Wyspa”", z:1, w:"ŚCIŚLE TAJNE ≥ TAJNE, a {MI6, OPERACJE} ⊇ {MI6}."},
+   {t:"Bond <b>pisze</b> pocztówkę do panny Moneypenny", z:0, w:"Zapis w dół. Nawet 007 nie wyśle pocztówki z wakacji — system nie wie, czy to Bond, czy koń trojański w jego teczce."},
+   {t:"Tupeene <b>czyta</b> plan „Wyspa”", z:0, w:"Czytanie w górę: JAWNE nie dominuje TAJNE."},
+   {t:"Tupeene <b>pisze</b> anonimowy donos do skrzynki MI6", z:1, w:"Zapis w górę jest dozwolony. MI6 dziękuje za donos i nie odpisze, bo nie może zapisać w dół."},
+   {t:"Lupin <b>czyta</b> plan „Wyspa”", z:0, w:"Poziom ten sam, ale Lupinowi brakuje kategorii MI6. Wiedza konieczna."},
+   {t:"Sholmes <b>czyta</b> plan „Wyspa”", z:1, w:"TAJNE = TAJNE i {MI6, SÛRETÉ} ⊇ {MI6}."},
+   {t:"Sholmes <b>czyta</b> akta Sûreté o Lupinie", z:1, w:"TAJNE ≥ POUFNE i ma kategorię SÛRETÉ."},
+   {t:"Bond <b>czyta</b> akta Sûreté o Lupinie", z:0, w:"Wysoki poziom nie zastępuje kategorii — Bond nie ma SÛRETÉ. Etykiety są nieporównywalne."}
+  ]));
+}
+
+function m3(el){
+  el.innerHTML = `
+  <p class="lead">Sholmes prowadzi <b>dziennik dochodzenia</b>. Tu nie chodzi o tajemnicę, tylko o <b>wiarygodność</b>. Obowiązuje model <b>Biby</b>: <b>nie czytaj w dół, nie zapisuj w górę</b>.</p>
+  <div class="scroll"><table class="lab"><tr><th>Kto / co</th><th>Integralność</th></tr>
+  <tr><td>Herlock Sholmes, dziennik dochodzenia</td><td><span class="lbl">WYSOKA</span></td></tr>
+  <tr><td>Wilson, asystent Sholmesa</td><td><span class="lbl">ŚREDNIA</span></td></tr>
+  <tr><td>plotki z pubu, rekomendacje Tupeene’a na LinkedIn</td><td><span class="lbl">NISKA</span></td></tr>
+  </table></div>`;
+  el.appendChild(quiz("m3",[
+   {p:"Tupeene wystawia sam sobie rekomendację „mistrz uczciwości” i chce ją <b>dopisać</b> do dziennika Sholmesa. Co mówi Biba?",
+    o:["Odmowa — zapis w górę","Zgoda — zapis w górę jest zawsze dozwolony","Zgoda, jeśli rekomendacja jest krótka"],ok:0,
+    w:"W Bibie zapis w górę jest zakazany: proces o niskiej integralności nie może skazić obiektu o wysokiej. (W Bellu–LaPaduli byłoby odwrotnie — tam zapis w górę jest dozwolony.)"},
+   {p:"Sholmes chce <b>przeczytać</b> plotki z pubu, zanim wpisze wnioski do dziennika.",
+    o:["Odmowa — czytanie w dół","Zgoda — czytać wolno zawsze","Zgoda, bo plotki są jawne"],ok:0,
+    w:"Biba zakazuje czytania w dół: poważny proces nie opiera decyzji na plotkach."},
+   {p:"Wilson (ŚREDNIA) <b>czyta</b> dziennik Sholmesa (WYSOKA).",
+    o:["Zgoda — czytanie w górę","Odmowa — czytanie w górę","Odmowa, bo Wilson zawsze się myli"],ok:0,
+    w:"W Bibie czytanie w górę jest bezpieczne: wiarygodne źródło nikogo nie skazi."},
+   {p:"W wariancie <b>niskiego znaku wody</b> Sholmes jednak czyta plotki. Co się dzieje?",
+    o:["Integralność Sholmesa spada do NISKIEJ i nie może już pisać w dzienniku, dopóki nie zacznie od nowa","Plotki zyskują integralność WYSOKĄ","Nic, Sholmes jest odporny"],ok:0,
+    w:"Proces, który przeczytał coś mało wiarygodnego, sam staje się mało wiarygodny. Jak lekarz, który dotknął czegoś brudnego, zanim wejdzie na salę operacyjną."},
+   {p:"Który model razem z Bibą sprawia, że Bond i Tupeene mogą się komunikować <b>tylko</b> na tym samym poziomie?",
+    o:["Bell–LaPadula","RBAC","DAC"],ok:0,
+    w:"BLP przepuszcza informację tylko w górę, Biba tylko w dół. Razem — tylko w poziomie."},
+   {p:"Gdzie w zwykłym Windowsie spotkamy zasadę „nie zapisuj w górę” z Biby?",
+    o:["W poziomach integralności: proces Low nie zmodyfikuje plików procesu Medium","W Koszu","W Notatniku"],ok:0,
+    w:"Mandatory Integrity Control od Visty: Low, Medium, High, System. Domyślna reguła to No-Write-Up."}
+  ]));
+}
+
+/* --- Misja 4: symulator SELinuksa --- */
+const REGULY4 = [
+ {k:"jedz",  t:"allow tupeene_t jedzenie_t : file { read };", dobra:true},
+ {k:"pij",   t:"allow tupeene_t woda_t : file { read };", dobra:true},
+ {k:"chata", t:"allow tupeene_t chata_t : dir { read write add_name };", dobra:true},
+ {k:"pam",   t:"allow tupeene_t pamietnik_t : file { append };", dobra:true},
+ {k:"smtp",  t:"allow tupeene_t smtp_port_t : tcp_socket { name_connect };", dobra:false},
+ {k:"mi6",   t:"allow tupeene_t mi6_teczka_t : file { read };", dobra:false},
+ {k:"tratwa",t:"allow tupeene_t tratwa_exec_t : file { execute };", dobra:false},
+ {k:"linked",t:"allow tupeene_t https_port_t : tcp_socket { name_connect };", dobra:false},
+];
+const AKCJE4 = [
+ {k:"jedz",  op:"read",        cel:"/wyspa/kokosy",            typ:"jedzenie_t",   kl:"file",      opis:"je kokosa"},
+ {k:"pij",   op:"read",        cel:"/wyspa/zrodlo",            typ:"woda_t",       kl:"file",      opis:"pije wodę ze źródła"},
+ {k:"chata", op:"add_name",    cel:"/wyspa/chata",             typ:"chata_t",      kl:"dir",       opis:"wstawia hamak do chaty"},
+ {k:"pam",   op:"append",      cel:"/wyspa/pamietnik.txt",     typ:"pamietnik_t",  kl:"file",      opis:"pisze pamiętnik („Dzień 1. Nikogo do oszukania”)"},
+ {k:"smtp",  op:"name_connect",cel:"port 25",                  typ:"smtp_port_t",  kl:"tcp_socket",opis:"rozsyła spam „wygrałeś bezludną wyspę”"},
+ {k:"mi6",   op:"read",        cel:"/mi6/plan_wyspa.pdf",      typ:"mi6_teczka_t", kl:"file",      opis:"podgląda teczkę MI6"},
+ {k:"tratwa",op:"execute",     cel:"/wyspa/tratwa",            typ:"tratwa_exec_t",kl:"file",      opis:"uruchamia tratwę i odpływa"},
+ {k:"linked",op:"name_connect",cel:"port 443",                 typ:"https_port_t", kl:"tcp_socket",opis:"loguje się na LinkedIn, żeby wystawić sobie rekomendacje"},
+];
+function m4(el){
+  const st = S.ans.m4 || {zazn:{}, tryb:"enforcing"};
+  el.innerHTML = `
+  <p class="lead">Pora zbudować wyspę. Tupeene trafia do domeny <code>tupeene_t</code>. Polityka zaczyna się od <b>domyślnej odmowy</b>: wolno tylko to, na co pozwala reguła <code>allow</code>.</p>
+  <p>Proszę zaznaczyć reguły, które dają Tupeene’owi <b>jedzenie, wodę, dach i pamiętnik</b> — i nic więcej. Potem wybrać tryb i wypuścić go na wyspę.</p>
+  <div id="reg"></div>
+  <h3>Tryb SELinuksa</h3>
+  <div class="seg toggle" role="group" aria-label="tryb"><button data-t="enforcing">Enforcing</button><button data-t="permissive">Permissive</button></div>
+  <div class="row"><button class="btn" id="wypusc">Wypuść Tupeene’a na wyspę</button></div>
+  <div id="log"></div>`;
+  const reg = el.querySelector("#reg");
+  REGULY4.forEach(r=>{
+    const l=document.createElement("label"); l.className="rule";
+    l.innerHTML=`<input type="checkbox" id="r-${r.k}" ${st.zazn[r.k]?"checked":""}><span>${esc(r.t)}</span>`;
+    l.querySelector("input").onchange=e=>{ st.zazn[r.k]=e.target.checked; S.ans.m4=st; zapisz(); };
+    reg.appendChild(l);
+  });
+  const tb = el.querySelectorAll(".toggle button");
+  const odsw = ()=>tb.forEach(b=>b.classList.toggle("on",b.dataset.t===st.tryb));
+  tb.forEach(b=>b.onclick=()=>{ st.tryb=b.dataset.t; S.ans.m4=st; zapisz(); odsw(); }); odsw();
+  const zablokuj = () => { el.querySelectorAll("input,.toggle button,#wypusc").forEach(x=>x.disabled=true); };
+  const symuluj = () => {
+    let out = "", pkt = 0, uciekl = false, ts = 1794480000;
+    AKCJE4.forEach((a,i)=>{
+      const pozw = !!st.zazn[a.k];
+      if (pozw){ out += `<span class="a">✓ Tupeene ${esc(a.opis)}</span>\n`; }
+      else {
+        const perm = st.tryb==="permissive"?1:0;
+        out += `<span class="d">type=AVC msg=audit(${ts+i}.0:${i+1}): avc: denied { ${a.op} } comm="tupeene" name="${esc(a.cel)}"\n  scontext=system_u:system_r:tupeene_t:s0 tcontext=system_u:object_r:${a.typ}:s0 tclass=${a.kl} permissive=${perm}</span>\n`;
+        out += perm ? `<span class="w">⚠ zapisano w dzienniku, ale PRZEPUSZCZONO: Tupeene ${esc(a.opis)}</span>\n` : `<span class="d">✗ zablokowano: Tupeene ${esc(a.opis)}</span>\n`;
+      }
+      const skutek = pozw || st.tryb==="permissive";
+      if (!REGULY4.find(r=>r.k===a.k).dobra && skutek) uciekl = true;
+    });
+    REGULY4.forEach(r=>{ if (!!st.zazn[r.k]===r.dobra) pkt++; });
+    if (st.tryb==="enforcing") pkt += 2;
+    const glod = REGULY4.some(r=>r.dobra && !st.zazn[r.k]);
+    let werdykt;
+    if (st.tryb==="permissive") werdykt = "Tryb permissive tylko notuje. Tupeene przeczytał wszystko, rozesłał spam i odpłynął tratwą. Dziennik AVC jest piękny — wyspa pusta.";
+    else if (uciekl) werdykt = "Któraś reguła była za hojna i Tupeene skorzystał. Każda zbędna reguła allow to dziura w wyspie.";
+    else if (glod) werdykt = "Wyspa szczelna, ale Tupeene jest głodny albo nie ma gdzie spać. Bond protestuje: miało być humanitarnie! Zbyt surowa polityka psuje działanie programu — wtedy ludzie wyłączają SELinuksa.";
+    else werdykt = "Idealnie. Tupeene je, pije, śpi i pisze pamiętnik. Spam, teczka MI6, tratwa i LinkedIn — zablokowane. Sholmes zapala fajkę.";
+    el.querySelector("#log").innerHTML = `<div class="term">${out}</div><div class="sheet"><p>${werdykt}</p></div>`;
+    return pkt;
+  };
+  el.querySelector("#wypusc").onclick = () => { const p = symuluj(); zablokuj(); zakonczMisje("m4", p); };
+  if (S.pts.m4!==undefined){ setTimeout(()=>{ symuluj(); zablokuj(); },0); }
+}
+
+/* --- Misja 5: zdolności --- */
+const ZDOLNOSCI = ["CAP_KILL","CAP_DAC_OVERRIDE","CAP_DAC_READ_SEARCH","CAP_SYS_TIME","CAP_CHOWN","(żadna)"];
+const POSTACIE5 = [
+ {k:"bond",   kto:"James Bond", co:"musi zakończyć proces Tupeene’a, który uciekł z wyspy. Potrzebuje słynnej licencji.", ok:"CAP_KILL", w:"Licencja na zabijanie w Linuksie to CAP_KILL: pozwala wysyłać sygnały do cudzych procesów. Bez niej nawet root dostaje „Operation not permitted” — sprawdzaliśmy na wykładzie."},
+ {k:"lupin",  kto:"Arsène Lupin", co:"dżentelmen-włamywacz; musi otworzyć każde drzwi, by wnieść do chaty zapasy, mimo zamków rwx.", ok:"CAP_DAC_OVERRIDE", w:"CAP_DAC_OVERRIDE omija sprawdzanie uprawnień rwx przy czytaniu i zapisie. Klucz uniwersalny — dlatego bardzo niebezpieczny."},
+ {k:"sholmes",kto:"Herlock Sholmes", co:"musi przeczytać wszystkie akta i przeszukać każdy katalog, ale niczego nie zmienia.", ok:"CAP_DAC_READ_SEARCH", w:"CAP_DAC_READ_SEARCH pozwala czytać każdy plik i przeglądać każdy katalog, ale nie zapisywać. Idealna dla detektywa i programu do kopii zapasowych."},
+ {k:"pilot",  kto:"Pilot odrzutowca bez lotu powrotnego", co:"przelatuje nad linią zmiany daty i musi przestawić zegar pokładowy.", ok:"CAP_SYS_TIME", w:"CAP_SYS_TIME pozwala ustawić zegar systemowy. Na co dzień ma ją usługa synchronizacji czasu."},
+ {k:"wino",   kto:"Bond z butelką włoskiego wina", co:"przekazuje butelkę na własność Lupinowi i Sholmesowi (ku ich zdumieniu, bo woleliby Bordeaux).", ok:"CAP_CHOWN", w:"Zmiana właściciela pliku wymaga CAP_CHOWN. Zwykły użytkownik nie może „oddać” pliku komuś innemu."},
+ {k:"tupeene",kto:"Tupeene na wyspie", co:"potrzebuje tylko kokosów, wody i hamaka.", ok:"(żadna)", w:"Żadnych zdolności. Najlepiej jeszcze wyczyścić mu zbiór ograniczający i ustawić no_new_privs, żeby nie zdobył ich nigdy."},
+];
+function m5(el){
+  const st = S.ans.m5 || {};
+  el.innerHTML = `<p class="lead">Root to władza absolutna. Sholmes proponuje pociąć ją na <b>zdolności</b> i dać każdemu tylko to, czego potrzebuje. Proszę przydzielić każdemu <b>jedną</b> zdolność.</p><div class="match" id="mt"></div>
+   <div class="row"><button class="btn" id="spr5">Wydaj licencje</button></div><div id="w5"></div>`;
+  const mt = el.querySelector("#mt");
+  POSTACIE5.forEach(p=>{
+    const d=document.createElement("div");
+    d.innerHTML=`<div class="who">${p.kto}</div><div class="small">${p.co}</div>
+     <select id="s-${p.k}" aria-label="zdolność dla: ${esc(p.kto)}"><option value="">— wybierz —</option>${ZDOLNOSCI.map(z=>`<option ${st[p.k]===z?"selected":""}>${z}</option>`).join("")}</select>
+     <div class="verdict" id="w-${p.k}"></div>`;
+    d.querySelector("select").onchange=e=>{ st[p.k]=e.target.value; S.ans.m5=st; zapisz(); };
+    mt.appendChild(d);
+  });
+  const ocen = () => { let pkt=0;
+    POSTACIE5.forEach(p=>{ const ok = st[p.k]===p.ok; if(ok) pkt++; const v=el.querySelector("#w-"+p.k);
+      v.className="verdict "+(ok?"ok":"no"); v.innerHTML=`${ok?"✓":"✗ poprawnie: "+p.ok+" —"} ${p.w}`; });
+    el.querySelectorAll("select,#spr5").forEach(x=>x.disabled=true); return pkt; };
+  el.querySelector("#spr5").onclick=()=>{ zakonczMisje("m5", ocen()); };
+  if (S.pts.m5!==undefined) setTimeout(ocen,0);
+}
+
+function m6(el){
+  el.innerHTML = `
+  <p class="lead">Tupeene jest na wyspie. Bond otwiera włoskie wino — złośliwie, bo wie, że Lupin i Sholmes kochają francuskie. Toast, a potem laptopy: czas na wzajemne rekomendacje na LinkedIn.</p>`;
+  el.appendChild(quiz("m6",[
+   {p:"LinkedIn wprowadza regułę: <b>nikt nie może wystawić rekomendacji samemu sobie</b>, a osoba pełniąca rolę „rekomendującego” nie może jednocześnie być „rekomendowanym” w tej samej sprawie. Jak to się nazywa w RBAC?",
+    o:["Rozdział obowiązków (separation of duties)","Hierarchia ról","Zasada spokoju"],ok:0,
+    w:"Tak samo jak w banku: zlecający nie zatwierdza, audytor nie kontroluje sam siebie."},
+   {p:"Bond ma rolę „agent 00”, która dziedziczy wszystkie uprawnienia roli „agent”. To w RBAC…",
+    o:["hierarchia ról","statyczny rozdział obowiązków","kategoria Bella–LaPaduli"],ok:0,
+    w:"Rola wyższa dziedziczy uprawnienia niższej — tak jak kierownik zmiany dziedziczy po kasjerze."},
+   {p:"Lupin klika w przeglądarce link „darmowa degustacja Bordeaux”. Przeglądarka działa na poziomie integralności <b>Low</b>. Strona chce zapisać plik do folderu z dokumentami Lupina (<b>Medium</b>). Co robi Windows?",
+    o:["Blokuje — No-Write-Up","Pozwala, bo Lupin jest właścicielem folderu","Pyta Bonda o zgodę"],ok:0,
+    w:"Poziomy integralności to Biba w praktyce: proces Low nie zapisze do obiektu Medium, nawet jeśli DAC by pozwolił. Właśnie dlatego istnieje katalog AppData\\LocalLow."},
+   {p:"Sholmes uruchamia wiersz poleceń „jako administrator” po zgodzie UAC. Jaki poziom integralności ma ten proces?",
+    o:["High (S-1-16-12288)","Low (S-1-16-4096)","Untrusted (S-1-16-0)"],ok:0,
+    w:"Administrator ma dwa tokeny: zwykły (Medium) i podniesiony (High). Można to sprawdzić poleceniem whoami /groups | findstr S-1-16."},
+   {p:"Kto ustala reguły wyspy Tupeene’a, jeśli to prawdziwa kontrola <b>obowiązkowa</b>?",
+    o:["Administrator bezpieczeństwa (autor polityki) — a nie Tupeene ani właściciele plików","Tupeene, bo to jego wyspa","Każdy, kto ma laptopa"],ok:0,
+    w:"To jest cała różnica między MAC a DAC. Więzień nie pisze regulaminu więzienia."}
+  ]));
+}
+const TRESC = [m1,m2,m3,m4,m5,m6];
+
+/* ===================== kod dyplomu ===================== */
+function kod(imie, pkt){
+  const s = imie.trim().toLowerCase().replace(/\s+/g," ") + "|" + pkt + "|WYSPA-2026";
+  let h = 0x811c9dc5;
+  for (const ch of s){ h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(36).toUpperCase().padStart(7,"0").slice(-6);
+}
+function ranga(p){
+  const r = p/MAX;
+  if (r>=0.9) return "Kawaler Orderu Przyjaźni Angielsko-Francuskiej (z winem włoskim)";
+  if (r>=0.7) return "Starszy inspektor polityki bezpieczeństwa";
+  if (r>=0.5) return "Młodszy strażnik wyspy";
+  return "Praktykant w Wydziale Q";
+}
+
+/* ===================== widoki ===================== */
+function idz(v, mi){ S.view=v; if(mi!==undefined) S.mi=mi; zapisz(); render(); window.scrollTo(0,0); }
+
+function renderStart(){
+  const app=$("#app");
+  const zaczete = Object.keys(S.pts).length>0;
+  app.innerHTML = `
+  <div class="eyebrow" style="margin-top:22px">Wykład 5 · Kontrola dostępu obowiązkowa</div>
+  <h1>Sprawa Tupeene’a</h1>
+  <span class="stamp">ŚCIŚLE TAJNE</span>
+  <p class="lead" style="margin-top:16px">James Bond, Arsène Lupin i Herlock Sholmes muszą unieszkodliwić łotra Tupeene’a. Lwy odpadają (Bond broni zwierząt), kosmos też (Sholmes ma trzy zastrzeżenia). Zostaje bezludna wyspa — czyli <b>polityka MAC</b>.</p>
+  <div class="sheet">
+    <div class="eyebrow">Sześć misji · około 25 minut · ${MAX} punktów</div>
+    <div class="scroll"><table class="lab" style="margin-top:8px">${MISJE.map((m,i)=>`<tr><td class="mono">${i+1}.</td><td>${m.tytul}</td><td class="small">${m.temat}</td><td class="small mono">${S.pts[m.id]!==undefined?S.pts[m.id]+"/"+m.max:m.czas}</td></tr>`).join("")}</table></div>
+  </div>
+  <div class="sheet">
+    <label for="imie" class="eyebrow">Imię i nazwisko (pojawi się na dyplomie)</label>
+    <div class="row"><input type="text" id="imie" value="${esc(S.name)}" autocomplete="name" placeholder="np. Anna Kowalska"></div>
+    <div class="row"><button class="btn" id="start">${zaczete?"Wróć do gry":"Rozpocznij odprawę"}</button>
+    ${zaczete?'<button class="btn ghost" id="reset">Zacznij od nowa</button>':""}</div>
+    <div id="potw"></div>
+  </div>
+  <footer class="small">
+    <p>Opowiadanie: „Lupin, Bond, and Sholmes debate” (Maciej Janowicz, 2024). Arsène Lupina i Herlocka Sholmesa wymyślił Maurice Leblanc, Jamesa Bonda — Ian Fleming, Tupeene’a — autor opowiadania. Gra jest parodią: wszystkie organizacje, etykiety i wyspy są fikcyjne, a żart dotyczy bohaterów i biurokracji, nie żadnego narodu.</p>
+    <p>Postęp zapisuje się w tej przeglądarce. Panel prowadzącego: <a href="#nauczyciel">#nauczyciel</a>.</p>
+  </footer>`;
+  $("#start").onclick=()=>{ const n=$("#imie").value.trim(); if(n.length<3){ $("#imie").focus(); $("#imie").setAttribute("aria-invalid","true"); $("#potw").innerHTML='<p class="small" style="color:var(--stamp)">Proszę wpisać imię i nazwisko — bez tego dyplom nie będzie ważny.</p>'; return; }
+    S.name=n; zapisz(); const nast = MISJE.findIndex(m=>S.pts[m.id]===undefined); nast<0?idz("final"):idz("mission",nast); };
+  const r=$("#reset"); if(r) r.onclick=()=>{ $("#potw").innerHTML=`<div class="row"><span class="small">Na pewno skasować postęp?</span><button class="btn ghost" id="tak">Tak, kasuj</button></div>`;
+    $("#tak").onclick=()=>{ S={name:S.name,view:"start",mi:0,pts:{},ans:{}}; zapisz(); render(); }; };
+}
+
+function renderMission(i){
+  const m=MISJE[i]; const app=$("#app");
+  app.innerHTML = `<div class="eyebrow" style="margin-top:22px">Misja ${i+1} z ${MISJE.length} · ${m.temat} · ${m.max} pkt</div>
+    <h2>${m.tytul}</h2><div class="sheet" id="tresc"></div><div id="dalej"></div>
+    <div class="row"><button class="btn ghost" id="wstecz">← Spis misji</button></div>`;
+  TRESC[i]($("#tresc"));
+  $("#wstecz").onclick=()=>idz("start");
+  if (S.pts[m.id]!==undefined) zakonczMisje(m.id, S.pts[m.id]);
+}
+
+function renderFinal(){
+  const brak = MISJE.filter(m=>S.pts[m.id]===undefined);
+  const app=$("#app");
+  if (brak.length){ app.innerHTML=`<h2>Jeszcze nie koniec</h2><div class="sheet"><p>Brakuje misji: ${brak.map(m=>m.tytul).join(", ")}.</p><div class="row"><button class="btn" id="w">Do spisu misji</button></div></div>`; $("#w").onclick=()=>idz("start"); return; }
+  const p=suma();
+  app.innerHTML = `<div class="eyebrow" style="margin-top:22px">Akta zamknięte</div><h2>Tupeene jest na wyspie</h2>
+  <div class="sheet"><p>Wieczorem, gdy nad Londynem pojawiły się gwiazdy, Sholmes wyrecytował haiku:</p>
+  <div class="haiku">Londyn i Paryż,<br>wspólna polityka MAC —<br>Tupeene na wyspie.</div>
+  <p class="small">Bond dolał włoskiego wina. Lupin udawał, że mu smakuje.</p></div>
+  <div class="cert"><div class="eyebrow">Dyplom</div>
+    <h3 style="margin:6px 0">${esc(S.name)}</h3>
+    <p>${ranga(p)}</p>
+    <p class="score">${p} / ${MAX} pkt</p>
+    <div class="eyebrow">Kod do sprawdzenia przez prowadzącego</div>
+    <div class="code">${kod(S.name,p)}</div>
+    <p class="small">Proszę pokazać ten ekran prowadzącemu albo przepisać kod.</p></div>
+  <div class="sheet"><h3>Co zapamiętać</h3>
+  <p>• <b>MAC</b>: reguły ustala polityka, nie właściciel. • <b>Bell–LaPadula</b>: nie czytaj w górę, nie zapisuj w dół. • <b>Biba</b>: odwrotnie. • <b>SELinux</b>: domyślna odmowa, reguły allow, tryb permissive tylko notuje. • <b>Zdolności</b>: root pocięty na kawałki. • <b>RBAC</b>: uprawnienia dla ról, rozdział obowiązków.</p></div>
+  <div class="row"><button class="btn ghost" id="w">← Spis misji</button></div>`;
+  $("#w").onclick=()=>idz("start");
+}
+
+function renderNauczyciel(){
+  $("#app").innerHTML = `<div class="eyebrow" style="margin-top:22px">Panel prowadzącego</div><h2>Sprawdzanie dyplomu</h2>
+  <div class="sheet"><p class="small">Proszę wpisać imię i nazwisko dokładnie tak jak na dyplomie (wielkość liter i spacje nie mają znaczenia) oraz liczbę punktów.</p>
+  <label class="eyebrow" for="n-imie">Imię i nazwisko</label><div class="row"><input type="text" id="n-imie"></div>
+  <label class="eyebrow" for="n-pkt" style="display:block;margin-top:12px">Punkty (0–${MAX})</label><div class="row"><input type="text" id="n-pkt" inputmode="numeric" style="max-width:120px"></div>
+  <label class="eyebrow" for="n-kod" style="display:block;margin-top:12px">Kod z dyplomu</label><div class="row"><input type="text" id="n-kod" style="max-width:200px;text-transform:uppercase"></div>
+  <div class="row"><button class="btn" id="n-spr">Sprawdź</button><a class="btn ghost" href="#" id="n-w">Wróć do gry</a></div>
+  <div id="n-wyn"></div></div>`;
+  $("#n-spr").onclick=()=>{ const i=$("#n-imie").value, p=parseInt($("#n-pkt").value,10), k=$("#n-kod").value.trim().toUpperCase();
+    if(!i.trim()||isNaN(p)){ $("#n-wyn").innerHTML='<p class="small" style="color:var(--stamp)">Proszę wpisać imię i nazwisko oraz liczbę punktów.</p>'; return; }
+    const ok = kod(i,p)===k;
+    $("#n-wyn").innerHTML = `<p class="verdict ${ok?"ok":"no"}" style="font-size:16px">${ok?"✓ Kod się zgadza.":"✗ Kod się nie zgadza (oczekiwany: "+kod(i,p)+")."}</p>`; };
+  $("#n-w").onclick=(e)=>{ e.preventDefault(); history.replaceState(null,"",location.pathname); render(); };
+}
+
+function render(){
+  pasek();
+  if (location.hash==="#nauczyciel") return renderNauczyciel();
+  if (S.view==="mission" && S.name) renderMission(S.mi);
+  else if (S.view==="final" && S.name) renderFinal();
+  else renderStart();
+}
+window.addEventListener("hashchange", render);
+render();
+</script>
+
+</body>
+</html>
